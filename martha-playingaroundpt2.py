@@ -71,9 +71,10 @@ def processFacebookPageFeedStatus(page_id, access_token):
     parameters = "&access_token=%s" % access_token
     url = base + node + fields + parameters
 
+    urlResponse = request_until_succeed(url)
 
     # retrieve data
-    if request_until_succeed(url) is None:
+    if urlResponse is None:
         status_id = page_id
         status_message = "N/A"
         status_author = "N/A"
@@ -92,7 +93,7 @@ def processFacebookPageFeedStatus(page_id, access_token):
         num_sads = "N/A"
         num_angrys = "N/A"
     else:
-        status = json.loads(request_until_succeed(url))
+        status = json.loads(urlResponse)
         status_id = status['id']
         status_message = '' if 'message' not in status.keys() else \
             unicode_normalize(status['message'])
@@ -182,7 +183,7 @@ def scrapeFacebookStatus():
         listofstatusids = list(columns['status_id'])
 
         for i in range(len(listofstatusids)):
-            w.writerow(processFacebookPageFeedStatus(str(listofstatusids[i]), access_token)) #print str(listofstatusids[i]) #What this does right now: prints each status id as a string. #right... so here we will call something that writes the row
+            w.writerow(processFacebookPageFeedStatus(str(listofstatusids[i]), access_token))
             num_processed += 1
             if num_processed % 100 == 0:
                 print "%s Statuses Processed: %s" % (num_processed,
